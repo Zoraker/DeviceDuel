@@ -1,0 +1,138 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block extra_css %} 
+<link rel="stylesheet" href="{% static "compare/compare.css" %}">
+<style>
+    .banner-area {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        background-image: url("/media/backgounds/image3.jpg");
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        text-align: center;
+        color: #fff;
+      }
+      .Main{
+        display: block;
+        width: 100%;
+        align-items: center;
+      }
+    
+      .Main .hello {
+        font-size: 70px;
+        margin-bottom: 10px;
+        margin-bottom: 80px;
+      }
+    
+      .Main .name {
+        font-size: 30px;
+        margin-bottom: 20px;
+      }
+</style>
+{% endblock %}
+{% block banner %}
+
+<div class="banner" style="background-image: url('/media/backgounds/image3.jpg'); height: 100vh;"></div>
+<section class="banner-area" id="Home">
+    <div class="Main">
+      <div class="hello">Compare</div>
+      <div class="name">
+        Compare and Choose the Best! This is your comparison hub — select products below and click 'Compare' to view detailed information and find your perfect match.
+      </div>
+    </div>
+  </section> 
+{% endblock %}
+{% block content %}
+<section class="product"> 
+    <div class="title">
+    <h2 class="product-category">Smart-Phones</h2>
+    <button class="login-btn" type="button" id="SmartPhones"><span class="cover"></span>Compare</button>
+    </div>
+    <button class="pre-btn"><img src="{% static "compare/images/arrow.png" %}" alt=""></button>
+    <button class="nxt-btn"><img src="{% static "compare/images/arrow.png" %}" alt=""></button>
+    <div class="product-container">
+        {% for phone in SmartPhones%}
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{{phone.image.url}} " class="product-thumb" alt="">
+                <button class="card-btn" onclick="changeText(this)" id="{{ phone.id }}">Select</button>
+            </div>
+            <div class="product-info">
+                <h2 class="product-brand">{{phone.brand}} </h2>
+                <p class="product-short-description">{{phone.model}}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+
+<section class="product"> 
+    <div class="title">
+    <h2 class="product-category">Laptops</h2>
+    <button class="login-btn" type="button" id="Laptops" ><span class="cover"></span>Compare</button>
+    </div>
+    <button class="pre-btn"><img src="{% static "compare/images/arrow.png" %}" alt=""></button>
+    <button class="nxt-btn"><img src="{% static "compare/images/arrow.png" %}" alt=""></button>
+    <div class="product-container">
+        {% for Laptop in Laptops%}
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{{Laptop.image.url}} " class="product-thumb" alt="">
+                <button class="card-btn" onclick="changeText(this)" id="{{ Laptop.id }}">Select</button>
+            </div>
+            <div class="product-info">
+                <h2 class="product-brand">{{Laptop.brand}} </h2>
+                <p class="product-short-description">{{Laptop.model}}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="product"> 
+    <div class="title">
+    <h2 class="product-category">Smart-Watches</h2>
+    <button class="login-btn" type="button" id="SmartWatches" ><span class="cover"></span>Compare</button>
+    </div>
+    <button class="pre-btn"><img src="{% static "compare/images/arrow.png" %}" alt=""></button>
+    <button class="nxt-btn"><img src="{% static "compare/images/arrow.png" %}" alt=""></button>
+    <div class="product-container">
+        {% for Watches in SmartWatches%}
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{{Watches.image.url}} " class="product-thumb" alt="">
+                <button class="card-btn" onclick="changeText(this)" id="{{ Watches.id }}">Select</button>
+            </div>
+            <div class="product-info">
+                <h2 class="product-brand">{{Watches.brand}} </h2>
+                <p class="product-short-description">{{Watches.model}}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+
+<script src="{% static "compare/compare.js" %}"></script>
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+{% endblock %}

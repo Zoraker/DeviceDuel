@@ -1,0 +1,615 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block extra_css %} 
+<link rel="stylesheet" href="{% static "compare/style.css" %}">
+<style>
+    .body_class.modal-active *:not(#add-modal):not(#add-modal *) {
+        pointer-events: none;
+      }
+      
+      #backdrop {
+        position: fixed;
+        width: 100%;
+        height: 100vh;
+        top: 0;
+        left: 0;
+        background: rgba(0, 0, 0, 0.75);
+        z-index: 10;
+        display: block;
+        pointer-events: all;
+      }
+      
+      .card {
+        box-shadow: 0 0px 1px rgba(0, 0, 0, 0.10), 0 2px 2px rgba(0, 0, 0, 0.10);
+        background: #fff;
+        border-radius: 5px;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+      }
+      
+      
+      .modal {
+        position: fixed;
+        z-index: 100;
+        background: white;
+        border-radius: 10px;
+        width: auto;
+        top: 2vh;
+        left: 10%;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+        display: block;
+        height: 100vh;
+      
+        /* animation: fade-slide-in 0.3s ease-out forwards; */
+      }
+      
+      :root {
+        --half-spacing-unit: 20px;
+        --base-spacing-unit: 20px;
+        --color-form-highlight: #f0f0f0;
+      }
+      
+      .table {
+        width: 100%;
+        border: 1px solid var(--color-form-highlight);
+      }
+      
+      .table-container {
+        display: flex;
+        gap: 0;
+      }
+      
+      .column {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+      }
+      
+      .table-header,
+      .table-content {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+      }
+      
+      .table {
+        width: 100%;
+        border: none;
+      }
+      
+      .table-header {
+        display: flex;
+        width: 100%;
+        background: #000;
+        padding: calc(var(--half-spacing-unit) * 1.5) 0;
+      }
+      
+      .table-row {
+        justify-content: center;
+        height: 50px;
+        display: flex;
+        width: 100%;
+        padding: calc(var(--half-spacing-unit) * 1.5) 0;
+      }
+      
+      .table-row:nth-of-type(odd) {
+        background: var(--color-form-highlight);
+      }
+      
+      .table-data,
+      .header__item {
+        width: 100%;
+        display: flex;
+        text-align: center;
+        padding: 0px;
+        border: none;
+        min-width: 100px;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .header__item {
+        text-transform: uppercase;
+        color: white;
+      }
+      
+      .filter__link {
+        color: white;
+        text-decoration: none;
+        position: relative;
+        display: inline-block;
+        padding-left: var(--base-spacing-unit);
+        padding-right: var(--base-spacing-unit);
+      }
+      
+      .filter__link::after {
+        content: '';
+        position: absolute;
+        right: calc(var(--half-spacing-unit) * -1.5);
+        color: white;
+        font-size: var(--half-spacing-unit);
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      
+      .filter__link.desc::after {
+        content: '(desc)';
+      }
+      
+      .filter__link.asc::after {
+        content: '(asc)';
+      }
+      
+      .login-btn {
+        margin-left: 300px;
+        width: 200px;
+        padding: 15px 0;
+        text-align: center;
+        margin: 20px 10px;
+        border-radius: 25px;
+        font-weight: bold;
+        border: 2px solid #ff7d7d;
+        background: transparent;
+        color: black;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .container.cover {
+        background: #ff7d7d;
+        height: 100%;
+        width: 0%;
+        border-radius: 25px;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        z-index: -1;
+        transition: 0.5s;
+      }
+      
+      .container button:hover span {
+        width: 100%;
+      
+      }
+      
+      .container {
+        width: 100%;
+      }
+      
+      .container button:hover {
+        border: none;
+        color: #fff;
+        transition: 0.5s;
+        background-color: #ff7d7d;
+      }
+      table>:not(caption)>*>* {
+        padding: 0 !important;
+      }
+      
+      .prizes-btn {
+        width: 100%;
+        display: flex;
+        justify-content: right;
+      }
+      
+      .prizes-btn .login-btn {
+        margin: 0px 5px;
+        border-radius: 0%;
+        height: 50px;
+        width: 120px;
+      }
+      
+      .prizes-btn.cover {
+        background: #ff7d7d;
+        height: 100%;
+        width: 0%;
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        z-index: -1;
+        transition: 0.5s;
+      }
+      
+
+    .Prizes{
+        display: none;
+        height: 50px;
+        width: 100%;
+        padding: calc(var(--half-spacing-unit) * 1.5) 0;
+    }
+
+
+    .Prizes.active{
+        display: flex;
+    }
+    
+    .clicked{
+        background-color: #ff7d7d;;
+
+    }
+
+    </style>
+{% endblock %}
+{% block banner %}
+{% endblock %}
+{% block content %}
+<div id="backdrop"></div>
+<div class="modal" id="add-modal" style="  max-height: 80vh;
+  overflow-y: auto; top: 20vh; width: 80%;" tabindex="-1">
+    <div class="card">
+        <div class="container">
+            <div class="table">
+                <div class="table-container">
+                    {% if mode == "SmartPhones" %}
+                    <!-- Left Column: Labels -->
+                        <div class="column column-left">
+                            <div class="table-content" style="padding: 0px;">
+                                <div class="table-header">
+                                    <div class="header__item">Name</div>
+                                </div>
+                                <div class="table-row">
+                                    <div class="table-data">Brand</div>
+                                </div>
+                                <div class="table-row ">
+                                    <div class="table-data">Processor</div>
+                                </div>
+                                <div class="table-row ">
+                                    <div class="table-data">Display</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">Ram</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">Storage</div>
+                                </div>
+                                <div class="table-row ">
+                                    <div class="table-data">Colours</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">Battery-Capacity</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">Resolution</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">Rear-Camera</div>
+                                </div>
+                                <div class="table-row ">
+                                    <div class="table-data">Front-Camera</div>
+                                </div>
+                                <div class="table-row ">
+                                    <div class="table-data">Prizes</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Right Column: Dynamic Data -->
+                        {% for Product in Product_Detail %}
+                        <div class="column column-right">
+                            <div class="table-content" style="padding: 0px;">
+                                <div class="table-header">
+                                    <div class="header__item">{{Product.model}}</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">{{Product.brand}}</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">{{Product.Processor}}</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">{{Product.display}}</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">{{Product.ram}}</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">{{Product.storage}}</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">{{Product.colours}}</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">{{Product.batteryCapacity}}</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">{{Product.resolution}}</div>
+                                </div>
+                                <div class="table-row ">
+                                    <div class="table-data">{{Product.rearCamera}}</div>
+                                </div>
+                                <div class="table-row ">
+                                    <div class="table-data">{{Product.frontCamera}}</div>
+                                </div>
+                                <div class="Prizes active" id="div1" style="background-color: #fff;">
+                                    <div class="table-data"><span class="editable-text">{{Product.amazon}}</span></div>
+                                </div>
+                                <div class="Prizes" id="div2" style="background-color: #fff;">
+                                    <div class="table-data"><span class="editable-text">{{Product.flipkart}}</span></div>
+                                </div>
+                                <div class="Prizes" id="div3" style="background-color: #fff;">
+                                    <div class="table-data"><span class="editable-text">{{Product.Reliance}}</span></div>
+                                </div>
+                                <div class="Prizes" id="div4" style="background-color: #fff;">
+                                    <div class="table-data"><span class="editable-text">{{Product.Brand_site}}</span></div>
+                                </div> 
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% elif mode == "Laptops" %}
+                        <div class="column column-left">
+                            <div class="table-content" style="padding: 0px;">
+                                <div class="table-header">
+                                    <div class="header__item">Name</div>
+                                </div>
+                                <div class="table-row ">
+                                    <div class="table-data">Brand</div>
+                                </div>
+                                <div class="table-row ">
+                                    <div class="table-data">Processor</div>
+                                </div>
+                                <div class="table-row ">
+                                    <div class="table-data">Display</div>
+                                </div>
+                                <div class="table-row ">
+                                    <div class="table-data">Graphics</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">Ram</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">Memory_Storage</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">Resolution</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">Battery-Capacity</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">Features</div>
+                                </div>
+                                <div class="table-row " style="">
+                                    <div class="table-data">Prizes</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Right Column: Dynamic Data -->
+                        {% for Product in Product_Detail %}
+                        <div class="column column-right">
+                            <div class="table-content" style="padding: 0px;">
+                                <div class="table-header">
+                                    <div class="header__item">{{Product.model}}</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">{{Product.brand}}</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">{{Product.Processor}}</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">{{Product.display}}</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">{{Product.graphics}}</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">{{Product.ram}}</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">{{Product.Memory_Storage}}</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">{{Product.batteryCapacity}}</div>
+                                </div>
+                                <div class="table-row  ">
+                                    <div class="table-data">{{Product.Resolution}}</div>
+                                </div>
+                                <div class="table-row ">
+                                    <div class="table-data" >{{Product.Features}}</div>
+                                </div>
+                                <div class="Prizes active" id="div1" style="background: var(--color-form-highlight)">
+                                    <div class="table-data"><span class="editable-text">{{Product.amazon}}</span></div>
+                                </div>
+                                <div class="Prizes" id="div2" style="background: var(--color-form-highlight)">
+                                    <div class="table-data" ><span class="editable-text">{{Product.flipkart}}</span></div>
+                                </div>
+                                <div class="Prizes" id="div3" style="background: var(--color-form-highlight)">
+                                    <div class="table-data"><span class="editable-text">{{Product.Reliance}}</span></div>
+                                </div>
+                                <div class="Prizes" id="div4" style="background: var(--color-form-highlight)">
+                                    <div class="table-data"style="background: var(--color-form-highlight)"><span class="editable-text">{{Product.Brand_site}}</span></div>
+                                </div> 
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% elif mode == "SmartWatches" %}
+                    <div class="column column-left">
+                        <div class="table-content" style="padding: 0px;">
+                            <div class="table-header">
+                                <div class="header__item">Name</div>
+                            </div>
+                            <div class="table-row ">
+                                <div class="table-data">Brand</div>
+                            </div>
+                            <div class="table-row ">
+                                <div class="table-data">Processor</div>
+                            </div>
+                            <div class="table-row ">
+                                <div class="table-data">Display</div>
+                            </div>
+                            <div class="table-row ">
+                                <div class="table-data">Weight</div>
+                            </div>
+                            <div class="table-row  ">
+                                <div class="table-data">Colors</div>
+                            </div>
+                            <div class="table-row  ">
+                                <div class="table-data">Sensors</div>
+                            </div>
+                            <div class="table-row  ">
+                                <div class="table-data">Resolution</div>
+                            </div>
+                            <div class="table-row  ">
+                                <div class="table-data">Battery-Capacity</div>
+                            </div>
+                            <div class="table-row  ">
+                                <div class="table-data">Features</div>
+                            </div>
+                            <div class="table-row " style="">
+                                <div class="table-data">Prizes</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Right Column: Dynamic Data -->
+                    {% for Product in Product_Detail %}
+                    <div class="column column-right">
+                        <div class="table-content" style="padding: 0px;">
+                            <div class="table-header">
+                                <div class="header__item">{{Product.model}}</div>
+                            </div>
+                            <div class="table-row  ">
+                                <div class="table-data">{{Product.brand}}</div>
+                            </div>
+                            <div class="table-row  ">
+                                <div class="table-data">{{Product.Processor}}</div>
+                            </div>
+                            <div class="table-row  ">
+                                <div class="table-data">{{Product.display}}</div>
+                            </div>
+                            <div class="table-row  ">
+                                <div class="table-data">{{Product.Weight}}</div>
+                            </div>
+                            <div class="table-row  ">
+                                <div class="table-data">{{Product.Colors}}</div>
+                            </div>
+                            <div class="table-row  ">
+                                <div class="table-data">{{Product.Sensors}}</div>
+                            </div>
+                            <div class="table-row  ">
+                                <div class="table-data">{{Product.batteryCapacity}}</div>
+                            </div>
+                            <div class="table-row  ">
+                                <div class="table-data">{{Product.Resolution}}</div>
+                            </div>
+                            <div class="table-row ">
+                                <div class="table-data" >{{Product.Features}}</div>
+                            </div>
+                            <div class="Prizes active" id="div1" style="background: var(--color-form-highlight)">
+                                <div class="table-data"><span class="editable-text">{{Product.amazon}}</span></div>
+                            </div>
+                            <div class="Prizes" id="div2" style="background: var(--color-form-highlight)">
+                                <div class="table-data" ><span class="editable-text">{{Product.flipkart}}</span></div>
+                            </div>
+                            <div class="Prizes" id="div3" style="background: var(--color-form-highlight)">
+                                <div class="table-data"><span class="editable-text">{{Product.Reliance}}</span></div>
+                            </div>
+                            <div class="Prizes" id="div4" style="background: var(--color-form-highlight)">
+                                <div class="table-data"style="background: var(--color-form-highlight)"><span class="editable-text">{{Product.Brand_site}}</span></div>
+                            </div> 
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        </div>
+            <div class="prizes-btn" id="prizes-btn">
+                <button class="login-btn clicked"  onclick="showDiv(1,this)" > <span class="cover" style="border-radius: 0px;"> </span>Amazon</button>
+                <button class="login-btn" onclick="showDiv(2,this)"> <span class="cover" style="border-radius: 0px;" ></span>FlipKart</button>
+                <button class="login-btn" onclick="showDiv(3,this)"><span class="cover" style="border-radius: 0px;"></span>Reliance-Digital</button>
+                <button class="login-btn"  onclick="showDiv(4,this)"> <span class="cover" style="border-radius: 0px;"></span>eBay</button>
+            </div>
+            <div style="display: flex;width: 100%; justify-content: center;">
+                <a href="{% url "compare" %}"><button class="login-btn" type="button" id="Cancel" ><span class="cover"></span>Cancel</button></a>
+            </div> 
+            </div>
+    </div>
+<div class="body_class" id="body_class" style="overflow: hidden;">
+<section class="product"> 
+    <div class="title">
+    <h2 class="product-category">Smart-Phones</h2>
+    <button class="login-btn" type="button" id="phone"><span class="cover"></span>Compare</button>
+    </div>
+    <button class="pre-btn"><img src="{% static "compare/images/arrow.png" %}" alt=""></button>
+    <button class="nxt-btn"><img src="{% static "compare/images/arrow.png" %}" alt=""></button>
+    <div class="product-container">
+        {% for phone in SmartPhones%}
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{{phone.image.url}} " class="product-thumb" alt="">
+                <button class="card-btn" onclick="changeText(this)" id="{{ phone.id }}">Select</button>
+            </div>
+            <div class="product-info">
+                <h2 class="product-brand">{{phone.brand}} </h2>
+                <p class="product-short-description">{{phone.model}}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+<section class="product"> 
+    <div class="title">
+    <h2 class="product-category">Smart-Phones</h2>
+    <button class="login-btn" type="button" ><span class="cover"></span>Compare</button>
+    </div>
+    <button class="pre-btn"><img src="{% static "compare/images/arrow.png" %}" alt=""></button>
+    <button class="nxt-btn"><img src="{% static "compare/images/arrow.png" %}" alt=""></button>
+    <div class="product-container">
+        {% for phone in SmartPhones%}
+        <div class="product-card">
+            <div class="product-image">
+                <img src="{{phone.image.url}} " class="product-thumb" alt="">
+                <button class="card-btn" onclick="changeText(this)" id="{{ phone.id }}">Select</button>
+            </div>
+            <div class="product-info">
+                <h2 class="product-brand">{{phone.brand}} </h2>
+                <p class="product-short-description">{{phone.model}}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+</div>
+<script>
+    document.body.style.overflow = "hidden";
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+
+
+    function showDiv(index,btn) {
+        let switchBtn = document.getElementById("prizes-btn").querySelectorAll(".login-btn") 
+        switchBtn.forEach(btn => btn.classList.remove('clicked') )
+        console.log(switchBtn)
+        const allProducts = document.querySelectorAll('.table-content');
+        allProducts.forEach(product => {
+            const allPrizes = product.querySelectorAll('.Prizes');
+
+            allPrizes.forEach(div => div.classList.remove('active'));
+            btn.classList.remove("clicked");
+            if (allPrizes[index - 1]) {
+                allPrizes[index - 1].classList.add('active');
+                btn.classList.add("clicked"); // Show the selected one
+              }
+        });
+
+    
+    }
+
+</script>
+{% endblock %}

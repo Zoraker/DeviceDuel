@@ -1,0 +1,150 @@
+{% extends "layout.html" %}
+{% load static %}
+
+{% block title %}
+ About
+{% endblock %}
+
+{% block extra_css %}
+ <style>
+    .banner-area {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      background-image: url("/media/backgounds/image3.jpg");
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      text-align: center;
+      color: #fff;
+    }
+    .Main{
+      display: block;
+      width: 100%;
+      align-items: center;
+    }
+  
+    .Main .hello {
+      font-size: 70px;
+      margin-bottom: 10px;
+      margin-bottom: 80px;
+    }
+  
+    .Main .name {
+      font-size: 30px;
+      margin-bottom: 20px;
+    }
+  
+body {
+  height: 100vh;
+}
+
+.wrapper {
+  margin-top: 50px;
+}
+
+.wrapper h1 {
+  font-size: 52px;
+  margin-bottom: 60px;
+  text-align: center;
+}
+
+.team {
+  display: flex;
+  justify-content: center;
+  width: auto;
+  text-align: center;
+}
+
+.team .team_member {
+  background-color: #2C3E50;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 1.15);
+  margin: 5px;
+  margin-bottom: 50px;
+  width: 300px;
+  padding: 20px;
+  line-height: 20px;
+  color: #8e8b8b;
+  position: relative;
+}
+
+.team .team_member h3 {
+  color: white;
+  font-size: 26px;
+  margin-top: 50px;
+}
+
+.role {
+  color: white;
+  margin: 12px 0;
+  font-size: 15px;
+}
+
+.team .team_member .team_img {
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 1.15);
+
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.team .team_member .team_img img {
+  width: 100px;
+  height: 100px;
+}
+  </style>
+{% endblock %}
+{% block banner %}
+<div class="banner" style="background-image: url('{% static "/media/backgounds/image2.jpg" %}'); height: 100vh;"></div>
+<section class="banner-area" id="Home">
+  <div class="Main">
+    <div class="hello">About-Us</div>
+    <div class="name">
+      Find out more about us! Building something that has an impact is something we are passionate about, and we are only beginning.
+    </div>
+  </div>
+</section> 
+{% endblock %}
+{% block content %}
+<div class="body">
+    <div class="wrapper">
+    <h1>Our Team</h1>
+    <div class="team">
+        <div class="team_member">
+            <div class="team_img">
+                <img src="{{MEDIA_URL}}/People/Abhi.jpg" alt="Team_image">
+            </div>
+            <h3>Abhishek Jagtap</h3>
+            <p class="role">Managed the backend development and structure of the website, as well as the implementation of essential features like real-time data retrieval and product comparison algorithms, in charge of the project.</p>
+        </div>
+        <div class="team_member">
+            <div class="team_img">
+                <img src="{{MEDIA_URL}}/People/Salem.jpg" alt="Team_image">
+            </div>
+            <h3>Salem Saudagar</h3>
+            <p class="role">Contributed for the project by creating content, optimising SEO, conducting in-depth market research, and creating user engagement plans that improved relevance and visibility.</p>
+        </div>
+        <div class="team_member">
+            <div class="team_img">
+                <img src="{{MEDIA_URL}}/People/Rohit.jpg" alt="Team_image">
+            </div>
+            <h3>Rohit More</h3>
+            <p class="role">In order to ensure the seamless running of daily operations, helped with product data collection, testing, minor troubleshooting, and website maintenance.</p>
+        </div>
+        <div class="team_member">
+            <div class="team_img">
+                <img src="{{MEDIA_URL}}/People/Sumeet.png" alt="Team_image">
+            </div>
+            <h3>Sumeet Shinde</h3>
+            <p class="role">Worked closely with Abhishek Jagtap, enabling with backend logic, front-end development, and API integrations to ensure a responsive and smooth user experience.</p>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
